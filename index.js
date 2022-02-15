@@ -29,6 +29,7 @@ async function run() {
         const supplierCollection = database.collection('suppliers');
         const expenseCollection = database.collection('expenses');
         const designationCollection = database.collection('designations');
+        const categoryCollection = database.collection('category');
 
 
 
@@ -43,6 +44,12 @@ async function run() {
         // GET : Products
         app.get('/products', async (req, res) => {
             const result = await productCollection.find({}).toArray();
+            res.json(result);
+        });
+
+        // GET : Category
+        app.get('/category', async (req, res) => {
+            const result = await categoryCollection.find({}).toArray();
             res.json(result);
         });
 
@@ -80,6 +87,43 @@ async function run() {
         app.get('/designations', async (req, res) => {
             const result = await designationCollection.find({}).toArray();
             res.json(result);
+        });
+
+
+        /* POST API */
+
+        // POST : Designation
+        app.post('/designations', async (req, res) => {
+            const newDesignation = req.body;
+            const result = await designationCollection.insertOne(newDesignation);
+            res.json(result);
+        });
+
+        // POST : Add Supplier
+        app.post('/suppliers', async (req, res) => {
+            const newSupplier = req.body;
+            const result = await supplierCollection.insertOne(newSupplier);
+            res.json(result);
+        });
+
+        // POST : Add Products
+        app.post('/products', async (req, res) => {
+            console.log(req.body);
+        });
+
+        // POST : Add Expense
+        app.post('/expenses', async (req, res) => {
+            const newExpense = req.body;
+            const result = await expenseCollection.insertOne(newExpense);
+            res.json(result);
+        });
+
+
+        /* PUT API */
+
+        // PUT : Supplier
+        app.put('/supplier/:supplierId', async (req, res) => {
+
         });
 
     }
