@@ -1,1 +1,3 @@
-# smart-shop-server
+# SMART SHOP SERVER
+
+Smart Shop Server side
