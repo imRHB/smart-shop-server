@@ -20,7 +20,7 @@ async function run() {
         /* Smart Shop POS database */
         const database = client.db('smart-shop-pos');
 
-        /* Collection */
+        /* Collections */
         const customerCollection = database.collection('customers');
         const productCollection = database.collection('products');
         const userCollection = database.collection('users');
@@ -33,7 +33,8 @@ async function run() {
 
 
 
-        /* GET API */
+        /* ------- GET API ------- */
+        /* Write down your GET API here */
 
         // GET : Customers
         app.get('/customers', async (req, res) => {
@@ -90,7 +91,11 @@ async function run() {
         });
 
 
-        /* POST API */
+
+
+
+        /* ------- POST API ------- */
+        /* Write down your POST API here */
 
         // POST : Designation
         app.post('/designations', async (req, res) => {
@@ -106,11 +111,6 @@ async function run() {
             res.json(result);
         });
 
-        // POST : Add Products
-        app.post('/products', async (req, res) => {
-            console.log(req.body);
-        });
-
         // POST : Add Expense
         app.post('/expenses', async (req, res) => {
             const newExpense = req.body;
@@ -119,12 +119,29 @@ async function run() {
         });
 
 
-        /* PUT API */
 
-        // PUT : Supplier
-        app.put('/supplier/:supplierId', async (req, res) => {
 
+
+        /* ------- PUT API ------- */
+        /* Write down your PUT API here */
+
+        // PUT : Demo
+        app.put('/demo', async (req, res) => {
+            console.log('UPDATED');
         });
+
+
+
+
+        /* ------- DELETE API ------- */
+        /* Write down your DELETE API here */
+
+        // DELETE : Demo
+        app.delete('/demo', async (req, res) => {
+            console.log('DELETED');
+        });
+
+
 
     }
 
