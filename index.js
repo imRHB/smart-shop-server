@@ -136,6 +136,52 @@ async function run() {
       res.json({ _id: id, deletedCount: result.deletedCount });
     });
 
+    // PUT - Update an employee details
+    app.put("/employees", async (req, res) => {
+      // Extract image data and convert it to binary base 64
+      const pic = req.files.image;
+      const picData = pic.data;
+      const encodedPic = picData.toString("base64");
+      const imageBuffer = Buffer.from(encodedPic, "base64");
+
+      // Extract other information and make our employee object including image for saveing into MongoDB
+      const {
+        _id,
+        name,
+        designation,
+        phone,
+        salary,
+        bloodGroup,
+        country,
+        city,
+        zip,
+        address,
+      } = req.body;
+
+      const employee = {
+        name,
+        designation,
+        phone,
+        salary,
+        bloodGroup,
+        country,
+        city,
+        zip,
+        address,
+        image: imageBuffer,
+      };
+
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: employee };
+      const result = await employeeCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
     /* ========================= Employees Collection End ======================= */
 
     // GET : Transactions
