@@ -67,11 +67,20 @@ async function run() {
       res.send(result);
     });
 
-    // GET : Employees
+    /* ========================= Employees Collection START ======================= */
+
+    // GET - Get all employees
     app.get("/employees", async (req, res) => {
-      const result = await employeeCollection.find({}).toArray();
-      res.json(result);
+      const cursor = employeeCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const employees = await cursor.toArray();
+        res.json(employees);
+      } else {
+        res.json({ message: "Employee Not Found!" });
+      }
     });
+
+    /* ========================= Employees Collection End ======================= */
 
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
