@@ -88,6 +88,46 @@ async function run() {
       res.json(employeeDetails);
     });
 
+    // POST - Add a employee by - Admin
+    app.post("/employees", async (req, res) => {
+      // Extract image data and convert it to binary base 64
+      const pic = req.files.image;
+      const picData = pic.data;
+      const encodedPic = picData.toString("base64");
+      const imageBuffer = Buffer.from(encodedPic, "base64");
+      // Extract other information and make our employee object including image for saving into MongoDB
+      const {
+        name,
+        designation,
+        employeeId,
+        phone,
+        email,
+        salary,
+        bloodGroup,
+        country,
+        city,
+        zip,
+        address,
+        image,
+      } = req.body;
+      const employee = {
+        name,
+        designation,
+        employeeId,
+        phone,
+        email,
+        salary,
+        bloodGroup,
+        country,
+        city,
+        zip,
+        address,
+        image: imageBuffer,
+      };
+      const result = await employeeCollection.insertOne(employee);
+      res.json(result);
+    });
+
     /* ========================= Employees Collection End ======================= */
 
     // GET : Transactions
