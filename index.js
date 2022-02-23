@@ -80,6 +80,14 @@ async function run() {
       }
     });
 
+    // GET API - Single employee Details
+    app.get("/employees/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const employeeDetails = await employeeCollection.findOne(query);
+      res.json(employeeDetails);
+    });
+
     /* ========================= Employees Collection End ======================= */
 
     // GET : Transactions
