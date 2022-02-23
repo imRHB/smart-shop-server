@@ -128,6 +128,14 @@ async function run() {
       res.json(result);
     });
 
+    // Delete - Delete a employee by admin
+    app.delete("/employees/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await employeeCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
     /* ========================= Employees Collection End ======================= */
 
     // GET : Transactions
