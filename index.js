@@ -2,15 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectId;
-const res = require("express/lib/response");
 require("dotenv").config();
 const fileUpload = require("express-fileupload");
-
 const app = express();
-//PORT
 const port = process.env.PORT || 5000;
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-//Middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
@@ -230,6 +228,137 @@ async function run() {
       const newExpense = req.body;
       const result = await expenseCollection.insertOne(newExpense);
       res.json(result);
+    });
+
+    /* ------- PUT API ------- */
+    /* Write down your PUT API here */
+
+    // PUT : Demo
+    app.put("/demo", async (req, res) => {
+      console.log("UPDATED");
+    });
+
+    /* ------- DELETE API ------- */
+    /* Write down your DELETE API here */
+
+    // DELETE : Demo
+    app.delete("/demo", async (req, res) => {
+      console.log("DELETED");
+    });
+  } finally {
+    // client.close();
+  }
+  try {
+    await client.connect();
+
+    /* Smart Shop POS database */
+    const database = client.db("smart-shop-pos");
+
+    /* Collections */
+    const customerCollection = database.collection("customers");
+    const productCollection = database.collection("products");
+    const userCollection = database.collection("users");
+    const employeeCollection = database.collection("employees");
+    const transsactionCollection = database.collection("transactions");
+    const supplierCollection = database.collection("suppliers");
+    const expenseCollection = database.collection("expenses");
+    const designationCollection = database.collection("designations");
+    const categoryCollection = database.collection("category");
+
+    /* ------- GET API ------- */
+    /* Write down your GET API here */
+
+    // GET : Customers
+    app.get("/customers", async (req, res) => {
+      const result = await customerCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Products
+    app.get("/products", async (req, res) => {
+      const result = await productCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Category
+    app.get("/category", async (req, res) => {
+      const result = await categoryCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Users
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // GET : Employees
+    app.get("/employees", async (req, res) => {
+      const result = await employeeCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Transactions
+    app.get("/transactions", async (req, res) => {
+      const result = await transsactionCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Suppliers
+    app.get("/suppliers", async (req, res) => {
+      const result = await supplierCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Expenses
+    app.get("/expenses", async (req, res) => {
+      const result = await expenseCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    // GET : Designations
+    app.get("/designations", async (req, res) => {
+      const result = await designationCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    /* ------- POST API ------- */
+    /* Write down your POST API here */
+
+    // POST : Designation
+    app.post("/designations", async (req, res) => {
+      const newDesignation = req.body;
+      const result = await designationCollection.insertOne(newDesignation);
+      res.json(result);
+    });
+
+    // POST : Add Supplier
+    app.post("/suppliers", async (req, res) => {
+      const newSupplier = req.body;
+      const result = await supplierCollection.insertOne(newSupplier);
+      res.json(result);
+    });
+
+    // POST : Add Expense
+    app.post("/expenses", async (req, res) => {
+      const newExpense = req.body;
+      const result = await expenseCollection.insertOne(newExpense);
+      res.json(result);
+    });
+
+    // Stripe Payment
+    app.post("/create-payment-intent", async (req, res) => {
+      const paymentInfo = req.body;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: paymentInfo.payAmount * 100,
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
     });
 
     /* ------- PUT API ------- */
