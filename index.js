@@ -6,6 +6,7 @@ require("dotenv").config();
 const fileUpload = require("express-fileupload");
 const app = express();
 const port = process.env.PORT || 5000;
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
 app.use(cors());
@@ -120,7 +121,20 @@ async function run() {
             res.json(result);
         });
 
-
+        // Stripe Payment
+        app.post('/create-payment-intent', async (req, res) => {
+            const paymentInfo = req.body;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: paymentInfo.payAmount * 100,
+                currency: 'usd',
+                automatic_payment_methods: {
+                    enabled: true,
+                },
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
 
         /* ------- PUT API ------- */
         /* Write down your PUT API here */
