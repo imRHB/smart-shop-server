@@ -32,7 +32,7 @@ async function run() {
         const productCollection = database.collection("products");
         const userCollection = database.collection("users");
         const employeeCollection = database.collection("employees");
-        const transsactionCollection = database.collection("transactions");
+        const transactionCollection = database.collection("transactions");
         const supplierCollection = database.collection("suppliers");
         const expenseCollection = database.collection("expenses");
         const designationCollection = database.collection("designations");
