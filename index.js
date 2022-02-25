@@ -276,6 +276,18 @@ async function run() {
 
         /* SUPPLIER SECTION */
 
+        //POST API- Add Supplier
+        app.post('/suppliers', async (req, res) => {
+            const supplier = await supplierCollection.insertOne(req.body);
+            res.json(supplier);
+        });
+
+        //Delete API -supplier
+
+        app.delete("/suppliers/:id", async (req, res) => {
+            const deletedSupplier = await supplierCollection.deleteOne({ _id: ObjectId(req.params.id) });
+            res.json(deletedSupplier);
+        });
 
 
 
