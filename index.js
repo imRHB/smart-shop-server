@@ -6,7 +6,7 @@ require("dotenv").config();
 const fileUpload = require("express-fileupload");
 const app = express();
 const port = process.env.PORT || 5000;
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
 app.use(cors());
@@ -32,7 +32,7 @@ async function run() {
         const productCollection = database.collection("products");
         const userCollection = database.collection("users");
         const employeeCollection = database.collection("employees");
-        const transsactionCollection = database.collection("transactions");
+        const transactionCollection = database.collection("transactions");
         const supplierCollection = database.collection("suppliers");
         const expenseCollection = database.collection("expenses");
         const designationCollection = database.collection("designations");
@@ -65,11 +65,122 @@ async function run() {
             res.send(result);
         });
 
-        // GET : Employees
+        /* ========================= Employees Collection START ======================= */
+
+        // GET - Get all employees
         app.get("/employees", async (req, res) => {
-            const result = await employeeCollection.find({}).toArray();
+            const cursor = employeeCollection.find({});
+            if ((await cursor.count()) > 0) {
+                const employees = await cursor.toArray();
+                res.json(employees);
+            } else {
+                res.json({ message: "Employee Not Found!" });
+            }
+        });
+
+        // GET API - Single employee Details
+        app.get("/employees/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const employeeDetails = await employeeCollection.findOne(query);
+            res.json(employeeDetails);
+        });
+
+        // POST - Add a employee by - Admin
+        app.post("/employees", async (req, res) => {
+            // Extract image data and convert it to binary base 64
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString("base64");
+            const imageBuffer = Buffer.from(encodedPic, "base64");
+            // Extract other information and make our employee object including image for saving into MongoDB
+            const {
+                name,
+                designation,
+                employeeId,
+                phone,
+                email,
+                salary,
+                bloodGroup,
+                country,
+                city,
+                zip,
+                address,
+                image,
+            } = req.body;
+            const employee = {
+                name,
+                designation,
+                employeeId,
+                phone,
+                email,
+                salary,
+                bloodGroup,
+                country,
+                city,
+                zip,
+                address,
+                image: imageBuffer,
+            };
+            const result = await employeeCollection.insertOne(employee);
             res.json(result);
         });
+
+        // Delete - Delete a employee by admin
+        app.delete("/employees/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await employeeCollection.deleteOne(query);
+            res.json({ _id: id, deletedCount: result.deletedCount });
+        });
+
+        // PUT - Update an employee details
+        app.put("/employees", async (req, res) => {
+            // Extract image data and convert it to binary base 64
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString("base64");
+            const imageBuffer = Buffer.from(encodedPic, "base64");
+
+            // Extract other information and make our employee object including image for saveing into MongoDB
+            const {
+                _id,
+                name,
+                designation,
+                phone,
+                salary,
+                bloodGroup,
+                country,
+                city,
+                zip,
+                address,
+            } = req.body;
+
+            const employee = {
+                name,
+                designation,
+                phone,
+                salary,
+                bloodGroup,
+                country,
+                city,
+                zip,
+                address,
+                image: imageBuffer,
+            };
+
+            const filter = { _id: ObjectId(_id) };
+            const options = { upsert: false };
+            const updateDoc = { $set: employee };
+            const result = await employeeCollection.updateOne(
+                filter,
+                updateDoc,
+                options
+            );
+            res.json(result);
+        });
+
+        /* ========================= Employees Collection End ======================= */
 
         // GET : Transactions
         app.get("/transactions", async (req, res) => {
@@ -95,8 +206,6 @@ async function run() {
             res.json(result);
         });
 
-
-
         /* ------- POST API ------- */
         /* Write down your POST API here */
 
@@ -121,21 +230,6 @@ async function run() {
             res.json(result);
         });
 
-        // Stripe Payment
-        app.post('/create-payment-intent', async (req, res) => {
-            const paymentInfo = req.body;
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: paymentInfo.payAmount * 100,
-                currency: 'usd',
-                automatic_payment_methods: {
-                    enabled: true,
-                },
-            });
-            res.send({
-                clientSecret: paymentIntent.client_secret,
-            });
-        });
-
         /* ------- PUT API ------- */
         /* Write down your PUT API here */
 
@@ -143,9 +237,6 @@ async function run() {
         app.put("/demo", async (req, res) => {
             console.log("UPDATED");
         });
-
-
-
 
         /* ------- DELETE API ------- */
         /* Write down your DELETE API here */
@@ -156,10 +247,97 @@ async function run() {
         });
 
 
+        /* --------------------------- WRITE DOWN YOUR POST, PUT, DELETE APIs --------------------------- */
 
-    }
 
-    finally {
+
+        /* STRIPE SECTION */
+
+        // Stripe Payment
+        app.post("/create-payment-intent", async (req, res) => {
+            const paymentInfo = req.body;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: paymentInfo.payAmount * 100,
+                currency: "usd",
+                automatic_payment_methods: {
+                    enabled: true,
+                },
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+
+        /* SUPPLIER SECTION */
+
+
+
+
+        /* CUSTOMER SECTION */
+
+
+
+
+        /* REPORT SECTION */
+
+
+
+
+        //--------/* PRODUCT SECTION *------------//
+
+        // GET : Products
+        app.get("/products", async (req, res) => {
+            const result = await productCollection.find({}).toArray();
+            res.json(result);
+        });
+
+        // //Get: single product
+        app.get('/details/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const cursor = await productCollection.findOne(query);
+            // console.log(cursor);
+            res.send(cursor);
+
+        })
+        // POST : Products
+        app.post("/products", async (req, res) => {
+            const product = req.body;
+            const result = await productCollection.insertOne(product);
+            res.json(result);
+        });
+
+        //Remove : Product
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(query);
+            // console.log(result);
+            res.send('delete')
+        })
+
+        // Update : Products information
+        app.put('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateData = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: updateData
+            };
+            const result = await productCollection.updateOne(filter, updateDoc, options);
+
+            console.log(result);
+            // console.log(req.body);
+            res.json(result);
+        })
+
+        //   ------------- End Products Section  -----------//
+
+
+
+    } finally {
         // client.close();
     }
 }
