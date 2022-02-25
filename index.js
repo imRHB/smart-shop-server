@@ -284,10 +284,56 @@ async function run() {
 
 
 
-        /* PRODUCT SECTION */
+        //--------/* PRODUCT SECTION *------------//
 
+        // GET : Products
+        app.get("/products", async (req, res) => {
+            const result = await productCollection.find({}).toArray();
+            res.json(result);
+        });
 
+        // //Get: single product
+        app.get('/details/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const cursor = await productCollection.findOne(query);
+            // console.log(cursor);
+            res.send(cursor);
 
+        })
+        // POST : Products
+        app.post("/products", async (req, res) => {
+            const product = req.body;
+            const result = await productCollection.insertOne(product);
+            res.json(result);
+        });
+
+        //Remove : Product
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(query);
+            // console.log(result);
+            res.send('delete')
+        })
+
+        // Update : Products information
+        app.put('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateData = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: updateData
+            };
+            const result = await productCollection.updateOne(filter, updateDoc, options);
+
+            console.log(result);
+            // console.log(req.body);
+            res.json(result);
+        })
+
+        //   ------------- End Products Section  -----------//
 
 
 
