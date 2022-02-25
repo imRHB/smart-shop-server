@@ -230,6 +230,8 @@ async function run() {
             res.json(result);
         });
 
+
+
         /* ------- PUT API ------- */
         /* Write down your PUT API here */
 
@@ -245,6 +247,9 @@ async function run() {
         app.delete("/demo", async (req, res) => {
             console.log("DELETED");
         });
+
+        //Delete: Customer
+
 
 
         /* --------------------------- WRITE DOWN YOUR POST, PUT, DELETE APIs --------------------------- */
@@ -276,6 +281,13 @@ async function run() {
 
         /* CUSTOMER SECTION */
 
+
+        // POST : Add Customer
+        app.post("/customers", async (req, res) => {
+            const newCustomer = req.body;
+            const result = await customerCollection.insertOne(newCustomer);
+            res.json(result);
+        });
 
 
 
