@@ -269,6 +269,26 @@ async function run() {
         });
 
 
+        /* SUPPLIER SECTION */
+
+
+
+
+        /* CUSTOMER SECTION */
+
+
+
+
+        /* REPORT SECTION */
+
+
+
+
+        /* PRODUCT SECTION */
+
+
+
+
 
 
     } finally {
