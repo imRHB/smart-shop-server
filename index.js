@@ -5,7 +5,7 @@ const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 const fileUpload = require("express-fileupload");
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
