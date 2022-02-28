@@ -4,14 +4,24 @@ const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 const fileUpload = require("express-fileupload");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+var admin = require("firebase-admin");
+
 const app = express();
 const port = process.env.PORT || 5000;
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
+
+/* Firebase Admin */
+var serviceAccount = require("./smart-shop-pos-firebase-adminsdk-km3ga-21151d26c2.json");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
 
 // Database Info
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.whfic.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -19,6 +29,21 @@ const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
+
+async function verifyToken(req, res, next) {
+    if (req.headers?.authorization?.startsWith('Bearer ')) {
+        const idToken = req.headers.authorization.split('Bearer ')[1];
+
+        try {
+            const decodedUser = await admin.auth().verifyIdToken(idToken);
+            req.decodedUserEmail = decodedUser.email;
+        }
+        catch {
+            /* some space for error */
+        }
+    }
+    next();
+};
 
 async function run() {
     try {
@@ -37,9 +62,25 @@ async function run() {
         const expenseCollection = database.collection("expenses");
         const designationCollection = database.collection("designations");
         const categoryCollection = database.collection("category");
+        const orderCollection = database.collection('orders');
 
         /* ------- GET API ------- */
         /* Write down your GET API here */
+
+        /* JWT Token Demo GET API */
+        // GET : Orders (query by user email)
+        app.get('/orders', verifyToken, async (req, res) => {
+            const email = req.query.email;
+            if (req.decodedUserEmail === email) {
+                const query = { email: email };
+                const cursor = orderCollection.find(query);
+                const orders = await cursor.toArray();
+                res.json(orders);
+            }
+            else {
+                res.status(401);
+            }
+        });
 
         // GET : Customers
         app.get("/customers", async (req, res) => {
