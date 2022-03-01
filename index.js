@@ -5,7 +5,7 @@ const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 const fileUpload = require("express-fileupload");
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Middleware
@@ -107,7 +107,6 @@ async function run() {
         city,
         zip,
         address,
-        image,
       } = req.body;
       const employee = {
         name,
@@ -186,7 +185,7 @@ async function run() {
 
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
-      const result = await transsactionCollection.find({}).toArray();
+      const result = await transactionCollection.find({}).toArray();
       res.json(result);
     });
 
