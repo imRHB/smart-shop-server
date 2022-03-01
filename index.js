@@ -8,7 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 var admin = require("firebase-admin");
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -16,11 +16,11 @@ app.use(express.json());
 app.use(fileUpload());
 
 /* Firebase Admin */
-var serviceAccount = require("./smart-shop-pos-firebase-adminsdk-km3ga-21151d26c2.json");
+// var serviceAccount = require("./smart-shop-pos-firebase-adminsdk-km3ga-21151d26c2.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
 // Database Info
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.whfic.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -29,19 +29,19 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
 });
 
-async function verifyToken(req, res, next) {
-  if (req.headers?.authorization?.startsWith("Bearer ")) {
-    const idToken = req.headers.authorization.split("Bearer ")[1];
+// async function verifyToken(req, res, next) {
+//   if (req.headers?.authorization?.startsWith("Bearer ")) {
+//     const idToken = req.headers.authorization.split("Bearer ")[1];
 
-    try {
-      const decodedUser = await admin.auth().verifyIdToken(idToken);
-      req.decodedUserEmail = decodedUser.email;
-    } catch {
-      /* some space for error */
-    }
-  }
-  next();
-}
+//     try {
+//       const decodedUser = await admin.auth().verifyIdToken(idToken);
+//       req.decodedUserEmail = decodedUser.email;
+//     } catch {
+//       /* some space for error */
+//     }
+//   }
+//   next();
+// }
 
 async function run() {
   try {
