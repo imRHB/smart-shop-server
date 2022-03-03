@@ -206,6 +206,21 @@ async function run() {
 
     /* ========================= Employees Collection End ======================= */
 
+    /* ========================= Designation Collection START ======================= */
+
+    // GET - Get all designations
+    app.get("/designations", async (req, res) => {
+      const cursor = designationCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const designations = await cursor.toArray();
+        res.json(designations);
+      } else {
+        res.json({ message: "Designation Not Found!" });
+      }
+    });
+
+    /* ========================= Designation Collection END ======================= */
+
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
       const result = await transactionCollection.find({}).toArray();
