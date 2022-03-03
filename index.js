@@ -227,6 +227,13 @@ async function run() {
       res.json(designationDetails);
     });
 
+    // POST - Add a designation by - Admin
+    app.post("/designations", async (req, res) => {
+      const designation = req.body;
+      const result = await designationCollection.insertOne(designation);
+      res.json(result);
+    });
+
     /* ========================= Designation Collection END ======================= */
 
     // GET : Transactions
@@ -244,12 +251,6 @@ async function run() {
     // GET : Expenses
     app.get("/expenses", async (req, res) => {
       const result = await expenseCollection.find({}).toArray();
-      res.json(result);
-    });
-
-    // GET : Designations
-    app.get("/designations", async (req, res) => {
-      const result = await designationCollection.find({}).toArray();
       res.json(result);
     });
 
