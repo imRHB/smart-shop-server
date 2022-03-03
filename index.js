@@ -206,6 +206,59 @@ async function run() {
 
     /* ========================= Employees Collection End ======================= */
 
+    /* ========================= Designation Collection START ======================= */
+
+    // GET - Get all designations
+    app.get("/designations", async (req, res) => {
+      const cursor = designationCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const designations = await cursor.toArray();
+        res.json(designations);
+      } else {
+        res.json({ message: "Designation Not Found!" });
+      }
+    });
+
+    // GET API - Single designation Details
+    app.get("/designations/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const designationDetails = await designationCollection.findOne(query);
+      res.json(designationDetails);
+    });
+
+    // POST - Add a designation by - Admin
+    app.post("/designations", async (req, res) => {
+      const designation = req.body;
+      const result = await designationCollection.insertOne(designation);
+      res.json(result);
+    });
+
+    // Delete - Delete designation by admin
+    app.delete("/designations/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await designationCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
+    // PUT - Update an designation details
+    app.put("/designations", async (req, res) => {
+      const designation = req.body;
+
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: designation };
+      const result = await designationCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
+    /* ========================= Designation Collection END ======================= */
+
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
       const result = await transactionCollection.find({}).toArray();
@@ -221,12 +274,6 @@ async function run() {
     // GET : Expenses
     app.get("/expenses", async (req, res) => {
       const result = await expenseCollection.find({}).toArray();
-      res.json(result);
-    });
-
-    // GET : Designations
-    app.get("/designations", async (req, res) => {
-      const result = await designationCollection.find({}).toArray();
       res.json(result);
     });
 
