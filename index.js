@@ -242,6 +242,21 @@ async function run() {
       res.json({ _id: id, deletedCount: result.deletedCount });
     });
 
+    // PUT - Update an designation details
+    app.put("/designations", async (req, res) => {
+      const designation = req.body;
+
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: designation };
+      const result = await designationCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
     /* ========================= Designation Collection END ======================= */
 
     // GET : Transactions
