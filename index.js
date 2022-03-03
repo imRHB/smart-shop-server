@@ -219,6 +219,14 @@ async function run() {
       }
     });
 
+    // GET API - Single designation Details
+    app.get("/designations/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const designationDetails = await designationCollection.findOne(query);
+      res.json(designationDetails);
+    });
+
     /* ========================= Designation Collection END ======================= */
 
     // GET : Transactions
