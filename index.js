@@ -234,6 +234,14 @@ async function run() {
       res.json(result);
     });
 
+    // Delete - Delete designation by admin
+    app.delete("/designations/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await designationCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
     /* ========================= Designation Collection END ======================= */
 
     // GET : Transactions
