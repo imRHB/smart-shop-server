@@ -289,9 +289,9 @@ async function run() {
 
     //Delete API -supplier
     app.delete("/suppliers/:id", async (req, res) => {
-      const result = await supplierCollection.deleteOne({
-        _id: ObjectId(req.params.id),
-      });
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await supplierCollection.deleteOne(query);
       res.json({ _id: id, deletedCount: result.deletedCount });
     });
 
