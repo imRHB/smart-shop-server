@@ -60,15 +60,10 @@ async function run() {
     const expenseCollection = database.collection("expenses");
     const designationCollection = database.collection("designations");
     const categoryCollection = database.collection("category");
+    const eventsCollection = database.collection("events");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
-
-    // GET : Customers
-    app.get("/customers", async (req, res) => {
-      const result = await customerCollection.find({}).toArray();
-      res.json(result);
-    });
 
     // GET : Products
     app.get("/products", async (req, res) => {
@@ -259,15 +254,131 @@ async function run() {
 
     /* ========================= Designation Collection END ======================= */
 
-    // GET : Transactions
-    app.get("/transactions", async (req, res) => {
-      const result = await transactionCollection.find({}).toArray();
+    /* ========================= Suppler Collection Start ======================= */
+
+    // GET - Get all Suppliers
+    app.get("/suppliers", async (req, res) => {
+      const cursor = supplierCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const suppliers = await cursor.toArray();
+        res.json(suppliers);
+      } else {
+        res.json({ message: "Supplier Not Found!" });
+      }
+    });
+
+    // GET API - Single Supplier Details
+    app.get("/suppliers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const supplierDetails = await supplierCollection.findOne(query);
+      res.json(supplierDetails);
+    });
+
+    // POST : Add Supplier
+    app.post("/suppliers", async (req, res) => {
+      const newSupplier = req.body;
+      const result = await supplierCollection.insertOne(newSupplier);
       res.json(result);
     });
 
-    // GET : Suppliers
-    app.get("/suppliers", async (req, res) => {
-      const result = await supplierCollection.find({}).toArray();
+    //Delete API -supplier
+    app.delete("/suppliers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await supplierCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
+    // PUT - Update an supplier details
+    app.put("/suppliers", async (req, res) => {
+      const supplier = req.body;
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: supplier };
+      const result = await supplierCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
+    /* ========================= Supplier Collection END ======================= */
+
+    /* ========================= Customer Collection Start ======================= */
+
+    // GET : All Customers
+    app.get("/customers", async (req, res) => {
+      const cursor = customerCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const customers = await cursor.toArray();
+        res.json(customers);
+      } else {
+        res.json({ message: "Customer Not Found!" });
+      }
+    });
+
+    // GET API - Single Customer Details
+    app.get("/customers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const customerDetails = await customerCollection.findOne(query);
+      res.json(customerDetails);
+    });
+
+    // POST : Add Customer
+    app.post("/customers", async (req, res) => {
+      const newCustomer = req.body;
+      const result = await customerCollection.insertOne(newCustomer);
+      res.json(result);
+    });
+
+    //Delete API - Customer
+    app.delete("/customers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await customerCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
+    // PUT - Update an customer details
+    app.put("/customers", async (req, res) => {
+      const customer = req.body;
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: customer };
+      const result = await customerCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
+    /* ========================= Customer Collection End ======================= */
+
+    /* ========================= Events Collection Start ======================= */
+
+    // POST : Events
+    app.post("/events", async (req, res) => {
+      const event = req.body;
+      const result = await eventsCollection.insertOne(event);
+      console.log(result);
+      res.json(result);
+    });
+
+    //GET : Events
+    app.get("/events", async (req, res) => {
+      const result = await eventsCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    /* ========================= Events Collection End ======================= */
+
+    // GET : Transactions
+    app.get("/transactions", async (req, res) => {
+      const result = await transactionCollection.find({}).toArray();
       res.json(result);
     });
 
@@ -284,13 +395,6 @@ async function run() {
     app.post("/designations", async (req, res) => {
       const newDesignation = req.body;
       const result = await designationCollection.insertOne(newDesignation);
-      res.json(result);
-    });
-
-    // POST : Add Supplier
-    app.post("/suppliers", async (req, res) => {
-      const newSupplier = req.body;
-      const result = await supplierCollection.insertOne(newSupplier);
       res.json(result);
     });
 
@@ -317,8 +421,6 @@ async function run() {
       console.log("DELETED");
     });
 
-    //Delete: Customer
-
     /* --------------------------- WRITE DOWN YOUR POST, PUT, DELETE APIs --------------------------- */
 
     /* STRIPE SECTION */
@@ -336,32 +438,6 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
-    });
-
-    /* SUPPLIER SECTION */
-
-    //POST API- Add Supplier
-    app.post("/suppliers", async (req, res) => {
-      const supplier = await supplierCollection.insertOne(req.body);
-      res.json(supplier);
-    });
-
-    //Delete API -supplier
-
-    app.delete("/suppliers/:id", async (req, res) => {
-      const deletedSupplier = await supplierCollection.deleteOne({
-        _id: ObjectId(req.params.id),
-      });
-      res.json(deletedSupplier);
-    });
-
-    /* CUSTOMER SECTION */
-
-    // POST : Add Customer
-    app.post("/customers", async (req, res) => {
-      const newCustomer = req.body;
-      const result = await customerCollection.insertOne(newCustomer);
-      res.json(result);
     });
 
     /* REPORT SECTION */
