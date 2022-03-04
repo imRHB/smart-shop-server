@@ -295,6 +295,20 @@ async function run() {
       res.json({ _id: id, deletedCount: result.deletedCount });
     });
 
+    // PUT - Update an supplier details
+    app.put("/suppliers", async (req, res) => {
+      const supplier = req.body;
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: supplier };
+      const result = await supplierCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
     /* ========================= Supplier Collection END ======================= */
 
     // GET : Transactions
