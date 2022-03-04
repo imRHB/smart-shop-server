@@ -60,6 +60,7 @@ async function run() {
     const expenseCollection = database.collection("expenses");
     const designationCollection = database.collection("designations");
     const categoryCollection = database.collection("category");
+    const eventsCollection = database.collection("events");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
@@ -356,6 +357,24 @@ async function run() {
     });
 
     /* ========================= Customer Collection End ======================= */
+
+    /* ========================= Events Collection Start ======================= */
+
+    // POST : Events
+    app.post("/events", async (req, res) => {
+      const event = req.body;
+      const result = await eventsCollection.insertOne(event);
+      console.log(result);
+      res.json(result);
+    });
+
+    //GET : Events
+    app.get("/events", async (req, res) => {
+      const result = await eventsCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    /* ========================= Events Collection End ======================= */
 
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
