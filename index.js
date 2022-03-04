@@ -272,6 +272,14 @@ async function run() {
       }
     });
 
+    // GET API - Single Supplier Details
+    app.get("/suppliers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const supplierDetails = await supplierCollection.findOne(query);
+      res.json(supplierDetails);
+    });
+
     /* ========================= Supplier Collection END ======================= */
 
     // GET : Transactions
