@@ -64,12 +64,6 @@ async function run() {
     /* ------- GET API ------- */
     /* Write down your GET API here */
 
-    // GET : Customers
-    app.get("/customers", async (req, res) => {
-      const result = await customerCollection.find({}).toArray();
-      res.json(result);
-    });
-
     // GET : Products
     app.get("/products", async (req, res) => {
       const result = await productCollection.find({}).toArray();
@@ -310,6 +304,21 @@ async function run() {
     });
 
     /* ========================= Supplier Collection END ======================= */
+
+    /* ========================= Customer Collection Start ======================= */
+
+    // GET : All Customers
+    app.get("/customers", async (req, res) => {
+      const cursor = customerCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const customers = await cursor.toArray();
+        res.json(customers);
+      } else {
+        res.json({ message: "Customer Not Found!" });
+      }
+    });
+
+    /* ========================= Customer Collection End ======================= */
 
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
