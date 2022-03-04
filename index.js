@@ -280,6 +280,21 @@ async function run() {
       res.json(supplierDetails);
     });
 
+    // POST : Add Supplier
+    app.post("/suppliers", async (req, res) => {
+      const newSupplier = req.body;
+      const result = await supplierCollection.insertOne(newSupplier);
+      res.json(result);
+    });
+
+    //Delete API -supplier
+    app.delete("/suppliers/:id", async (req, res) => {
+      const result = await supplierCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
     /* ========================= Supplier Collection END ======================= */
 
     // GET : Transactions
@@ -301,13 +316,6 @@ async function run() {
     app.post("/designations", async (req, res) => {
       const newDesignation = req.body;
       const result = await designationCollection.insertOne(newDesignation);
-      res.json(result);
-    });
-
-    // POST : Add Supplier
-    app.post("/suppliers", async (req, res) => {
-      const newSupplier = req.body;
-      const result = await supplierCollection.insertOne(newSupplier);
       res.json(result);
     });
 
@@ -353,23 +361,6 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
-    });
-
-    /* SUPPLIER SECTION */
-
-    //POST API- Add Supplier
-    app.post("/suppliers", async (req, res) => {
-      const supplier = await supplierCollection.insertOne(req.body);
-      res.json(supplier);
-    });
-
-    //Delete API -supplier
-
-    app.delete("/suppliers/:id", async (req, res) => {
-      const deletedSupplier = await supplierCollection.deleteOne({
-        _id: ObjectId(req.params.id),
-      });
-      res.json(deletedSupplier);
     });
 
     /* CUSTOMER SECTION */
