@@ -333,6 +333,14 @@ async function run() {
       res.json(result);
     });
 
+    //Delete API - Customer
+    app.delete("/customers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await customerCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
     /* ========================= Customer Collection End ======================= */
 
     // GET : Transactions
