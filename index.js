@@ -318,6 +318,21 @@ async function run() {
       }
     });
 
+    // GET API - Single Customer Details
+    app.get("/customers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const customerDetails = await customerCollection.findOne(query);
+      res.json(customerDetails);
+    });
+
+    // POST : Add Customer
+    app.post("/customers", async (req, res) => {
+      const newCustomer = req.body;
+      const result = await customerCollection.insertOne(newCustomer);
+      res.json(result);
+    });
+
     /* ========================= Customer Collection End ======================= */
 
     // GET : Transactions
@@ -365,8 +380,6 @@ async function run() {
       console.log("DELETED");
     });
 
-    //Delete: Customer
-
     /* --------------------------- WRITE DOWN YOUR POST, PUT, DELETE APIs --------------------------- */
 
     /* STRIPE SECTION */
@@ -384,15 +397,6 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
-    });
-
-    /* CUSTOMER SECTION */
-
-    // POST : Add Customer
-    app.post("/customers", async (req, res) => {
-      const newCustomer = req.body;
-      const result = await customerCollection.insertOne(newCustomer);
-      res.json(result);
     });
 
     /* REPORT SECTION */
