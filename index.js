@@ -259,15 +259,24 @@ async function run() {
 
     /* ========================= Designation Collection END ======================= */
 
+    /* ========================= Suppler Collection Start ======================= */
+
+    // GET - Get all Suppliers
+    app.get("/suppliers", async (req, res) => {
+      const cursor = supplierCollection.find({});
+      if ((await cursor.count()) > 0) {
+        const suppliers = await cursor.toArray();
+        res.json(suppliers);
+      } else {
+        res.json({ message: "Supplier Not Found!" });
+      }
+    });
+
+    /* ========================= Supplier Collection END ======================= */
+
     // GET : Transactions
     app.get("/transactions", async (req, res) => {
       const result = await transactionCollection.find({}).toArray();
-      res.json(result);
-    });
-
-    // GET : Suppliers
-    app.get("/suppliers", async (req, res) => {
-      const result = await supplierCollection.find({}).toArray();
       res.json(result);
     });
 
