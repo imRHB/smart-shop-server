@@ -341,6 +341,20 @@ async function run() {
       res.json({ _id: id, deletedCount: result.deletedCount });
     });
 
+    // PUT - Update an customer details
+    app.put("/customers", async (req, res) => {
+      const customer = req.body;
+      const filter = { _id: ObjectId(_id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: customer };
+      const result = await customerCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
     /* ========================= Customer Collection End ======================= */
 
     // GET : Transactions
