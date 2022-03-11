@@ -292,7 +292,14 @@ async function run() {
 
     // PUT - Update an supplier details
     app.put("/suppliers", async (req, res) => {
-      const supplier = req.body;
+      const { _id, name, contact, address, details, balance } = req.body;
+      const supplier = {
+        name,
+        contact,
+        address,
+        details,
+        balance,
+      };
       const filter = { _id: ObjectId(_id) };
       const options = { upsert: false };
       const updateDoc = { $set: supplier };
