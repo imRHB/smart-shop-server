@@ -77,6 +77,19 @@ async function run() {
       res.json(result);
     });
 
+    app.post('/category', async (req, res) => {
+      const newCategory = req.body;
+      const result = await categoryCollection.insertOne(newCategory);
+      res.json(result);
+    });
+
+    app.delete('/category/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await categoryCollection.deleteOne(query);
+      res.json(result);
+    });
+
     // GET : Users
     app.get("/users", async (req, res) => {
       const result = await userCollection.find({}).toArray();
