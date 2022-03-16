@@ -77,13 +77,13 @@ async function run() {
       res.json(result);
     });
 
-    app.post('/category', async (req, res) => {
+    app.post("/category", async (req, res) => {
       const newCategory = req.body;
       const result = await categoryCollection.insertOne(newCategory);
       res.json(result);
     });
 
-    app.delete('/category/:id', async (req, res) => {
+    app.delete("/category/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await categoryCollection.deleteOne(query);
@@ -168,12 +168,6 @@ async function run() {
 
     // PUT - Update an employee details
     app.put("/employees", async (req, res) => {
-      // Extract image data and convert it to binary base 64
-      const pic = req.files.image;
-      const picData = pic.data;
-      const encodedPic = picData.toString("base64");
-      const imageBuffer = Buffer.from(encodedPic, "base64");
-
       // Extract other information and make our employee object including image for saveing into MongoDB
       const {
         _id,
@@ -188,18 +182,40 @@ async function run() {
         address,
       } = req.body;
 
-      const employee = {
-        name,
-        designation,
-        phone,
-        salary,
-        bloodGroup,
-        country,
-        city,
-        zip,
-        address,
-        image: imageBuffer,
-      };
+      let employee = {};
+
+      // Extract image data and convert it to binary base 64
+      if (req?.files?.image) {
+        const pic = req.files.image;
+        const picData = pic.data;
+        const encodedPic = picData.toString("base64");
+        const imageBuffer = Buffer.from(encodedPic, "base64");
+
+        employee = {
+          name,
+          designation,
+          phone,
+          salary,
+          bloodGroup,
+          country,
+          city,
+          zip,
+          address,
+          image: imageBuffer,
+        };
+      } else {
+        employee = {
+          name,
+          designation,
+          phone,
+          salary,
+          bloodGroup,
+          country,
+          city,
+          zip,
+          address,
+        };
+      }
 
       const filter = { _id: ObjectId(_id) };
       const options = { upsert: false };
