@@ -549,6 +549,15 @@ async function run() {
       res.json(result);
     });
 
+
+    // //Get: single order
+    app.get("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const cursor = await ordersCollection.findOne(query);
+      res.send(cursor);
+    });
+
     //Remove : order
 
     app.delete("/orders/:id", async (req, res) => {
