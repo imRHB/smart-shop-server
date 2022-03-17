@@ -58,6 +58,7 @@ async function run() {
     const transactionCollection = database.collection("transactions");
     const supplierCollection = database.collection("suppliers");
     const expenseCollection = database.collection("expenses");
+    const expenseItemCollection = database.collection("expense-items");
     const designationCollection = database.collection("designations");
     const categoryCollection = database.collection("category");
     const eventsCollection = database.collection("events");
@@ -87,6 +88,24 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await categoryCollection.deleteOne(query);
+      res.json(result);
+    });
+
+    app.get('/expense-items', async (req, res) => {
+      const expenseItems = await expenseItemCollection.find({}).toArray();
+      res.json(expenseItems);
+    });
+
+    app.post('/expense-items', async (req, res) => {
+      const newExpenseItem = req.body;
+      const result = await expenseItemCollection.insertOne(newExpenseItem);
+      res.json(result);
+    });
+
+    app.delete('/expense-items/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await expenseItemCollection.deleteOne(query);
       res.json(result);
     });
 
