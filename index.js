@@ -549,6 +549,14 @@ async function run() {
       res.json(result);
     });
 
+    //Remove : order
+
+    app.delete("/orders/:id", async (req, res) => {
+      const deletedOrder = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      res.json(deletedOrder);
+    });
+
+
 
     /* ========================= order Collection End ======================= */
 
