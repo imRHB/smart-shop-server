@@ -61,6 +61,7 @@ async function run() {
     const designationCollection = database.collection("designations");
     const categoryCollection = database.collection("category");
     const eventsCollection = database.collection("events");
+    const ordersCollection = database.collection("orders");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
@@ -515,6 +516,46 @@ async function run() {
     });
 
     //   ------------- End Products Section  -----------//
+
+
+    /* ========================= order Collection Start ======================= */
+
+    // POST : orders
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await ordersCollection.insertOne(order);
+      console.log(result);
+      res.json(result);
+    });
+
+    //GET : orders
+    app.get("/orders", async (req, res) => {
+      const result = await ordersCollection.find({}).toArray();
+      res.json(result);
+    });
+
+
+    //UPDATE API - orders payment status
+    app.put('/orders/:id', async (req, res) => {
+      const order = req.body;
+      const options = { upsert: true };
+      const updatedPayment = { _id: ObjectId(req.params.id) };
+      const updatedPaymentStatus = {
+        $set: {
+          payment: order.payment
+        }
+      };
+      const result = await ordersCollection.updateOne(updatedPayment, updatedPaymentStatus, options);
+      res.json(result);
+    });
+
+
+    /* ========================= order Collection End ======================= */
+
+
+
+
+
   } finally {
     // client.close();
   }
