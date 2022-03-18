@@ -400,7 +400,15 @@ async function run() {
 
     // PUT - Update an customer details
     app.put("/customers", async (req, res) => {
-      const customer = req.body;
+      const { _id, name, email, city, zip, address } = req.body;
+
+      const customer = {
+        name,
+        email,
+        city,
+        zip,
+        address,
+      };
       const filter = { _id: ObjectId(_id) };
       const options = { upsert: false };
       const updateDoc = { $set: customer };
