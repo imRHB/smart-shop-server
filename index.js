@@ -672,6 +672,12 @@ async function run() {
       res.json(result);
     });
 
+    //Delete Single Loan by ID
+    app.delete("/loans/:id", async (req, res) => {
+      const deletedLoans = await loansCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      res.json(deletedLoans);
+    });
+
 
     /* ========================= Loans Collection End ======================= */
 
