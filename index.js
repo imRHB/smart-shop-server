@@ -666,6 +666,11 @@ async function run() {
       const result = await loansCollection.insertOne(loan);
       res.json(result);
     });
+    //GET : loans
+    app.get("/loans", async (req, res) => {
+      const result = await loansCollection.find({}).toArray();
+      res.json(result);
+    });
 
 
     /* ========================= Loans Collection End ======================= */
