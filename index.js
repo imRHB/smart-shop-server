@@ -63,6 +63,7 @@ async function run() {
     const categoryCollection = database.collection("category");
     const eventsCollection = database.collection("events");
     const ordersCollection = database.collection("orders");
+    const loansCollection = database.collection("loans");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
@@ -657,7 +658,17 @@ async function run() {
     /* ========================= Transaction Collection End ======================= */
 
 
+    /* ========================= Loans Collection Start ======================= */
 
+    // POST : loans
+    app.post("/loans", async (req, res) => {
+      const loan = req.body;
+      const result = await loansCollection.insertOne(loan);
+      res.json(result);
+    });
+
+
+    /* ========================= Loans Collection End ======================= */
 
   } finally {
     // client.close();
