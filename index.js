@@ -678,7 +678,19 @@ async function run() {
       res.json(deletedLoans);
     });
 
-
+    //UPDATE API - loans status
+    app.put('/loans/:id', async (req, res) => {
+      const loan = req.body;
+      const options = { upsert: true };
+      const approvedLoan = { _id: ObjectId(req.params.id) };
+      const approvedLoanStatus = {
+        $set: {
+          status: loan.status
+        }
+      };
+      const result = await transactionCollection.updateOne(approvedLoan, approvedLoanStatus, options);
+      res.json(result);
+    });
     /* ========================= Loans Collection End ======================= */
 
   } finally {
