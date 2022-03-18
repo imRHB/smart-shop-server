@@ -400,7 +400,15 @@ async function run() {
 
     // PUT - Update an customer details
     app.put("/customers", async (req, res) => {
-      const customer = req.body;
+      const { _id, name, email, city, zip, address } = req.body;
+
+      const customer = {
+        name,
+        email,
+        city,
+        zip,
+        address,
+      };
       const filter = { _id: ObjectId(_id) };
       const options = { upsert: false };
       const updateDoc = { $set: customer };
@@ -604,6 +612,49 @@ async function run() {
 
     /* ========================= order Collection End ======================= */
 
+    /* ========================= Transaction Collection Start ======================= */
+
+    //POST : transactions
+    app.post("/transactions", async (req, res) => {
+      const transaction = req.body;
+      const result = await transactionCollection.insertOne(transaction);
+      res.json(result);
+    });
+
+
+    //UPDATE API - transactions status
+    app.put('/transactions/:id', async (req, res) => {
+      const transaction = req.body;
+      const options = { upsert: true };
+      const updatedPayment = { _id: ObjectId(req.params.id) };
+      const updatedPaymentStatus = {
+        $set: {
+          payment: transaction.payment
+        }
+      };
+      const result = await transactionCollection.updateOne(updatedPayment, updatedPaymentStatus, options);
+      res.json(result);
+    });
+
+
+    // //Get: single transaction
+    app.get("/transactions/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const cursor = await transactionCollection.findOne(query);
+      res.send(cursor);
+    });
+
+    //Remove : transaction
+
+    app.delete("/transactions/:id", async (req, res) => {
+      const deletedTransaction = await transactionCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      res.json(deletedTransaction);
+    });
+
+
+
+    /* ========================= Transaction Collection End ======================= */
 
 
 
