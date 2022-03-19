@@ -63,6 +63,7 @@ async function run() {
     const categoryCollection = database.collection("category");
     const eventsCollection = database.collection("events");
     const ordersCollection = database.collection("orders");
+    const loansCollection = database.collection("loans");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
@@ -612,9 +613,85 @@ async function run() {
 
     /* ========================= order Collection End ======================= */
 
+    /* ========================= Transaction Collection Start ======================= */
+
+    //POST : transactions
+    app.post("/transactions", async (req, res) => {
+      const transaction = req.body;
+      const result = await transactionCollection.insertOne(transaction);
+      res.json(result);
+    });
+
+
+    //UPDATE API - transactions status
+    app.put('/transactions/:id', async (req, res) => {
+      const transaction = req.body;
+      const options = { upsert: true };
+      const updatedPayment = { _id: ObjectId(req.params.id) };
+      const updatedPaymentStatus = {
+        $set: {
+          payment: transaction.payment
+        }
+      };
+      const result = await transactionCollection.updateOne(updatedPayment, updatedPaymentStatus, options);
+      res.json(result);
+    });
+
+
+    // //Get: single transaction
+    app.get("/transactions/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const cursor = await transactionCollection.findOne(query);
+      res.send(cursor);
+    });
+
+    //Remove : transaction
+
+    app.delete("/transactions/:id", async (req, res) => {
+      const deletedTransaction = await transactionCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      res.json(deletedTransaction);
+    });
 
 
 
+    /* ========================= Transaction Collection End ======================= */
+
+
+    /* ========================= Loans Collection Start ======================= */
+
+    // POST : loans
+    app.post("/loans", async (req, res) => {
+      const loan = req.body;
+      const result = await loansCollection.insertOne(loan);
+      res.json(result);
+    });
+    //GET : loans
+    app.get("/loans", async (req, res) => {
+      const result = await loansCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    //Delete Single Loan by ID
+    app.delete("/loans/:id", async (req, res) => {
+      const deletedLoans = await loansCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      res.json(deletedLoans);
+    });
+
+    //UPDATE API - loans status
+    app.put('/loans/:id', async (req, res) => {
+      const loan = req.body;
+      const options = { upsert: true };
+      const approvedLoan = { _id: ObjectId(req.params.id) };
+      const approvedLoanStatus = {
+        $set: {
+          status: loan.status
+        }
+      };
+      const result = await transactionCollection.updateOne(approvedLoan, approvedLoanStatus, options);
+      res.json(result);
+    });
+    /* ========================= Loans Collection End ======================= */
 
   } finally {
     // client.close();
