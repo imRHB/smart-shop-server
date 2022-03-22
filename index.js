@@ -64,14 +64,21 @@ async function run() {
     const eventsCollection = database.collection("events");
     const ordersCollection = database.collection("orders");
     const loansCollection = database.collection("loans");
+    const storeCollection = database.collection("stores");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
 
     // GET : Products
-    app.get("/products", async (req, res) => {
+    /* app.get("/products", async (req, res) => {
       const result = await productCollection.find({}).toArray();
       res.json(result);
+    }); */
+
+    // GET : Stores
+    app.get('/stores', async (req, res) => {
+      const stores = await storeCollection.find({}).toArray();
+      res.json(stores);
     });
 
     // GET : Category
@@ -523,10 +530,16 @@ async function run() {
       // console.log(cursor);
       res.send(cursor);
     });
+
     // POST : Products
     app.post("/products", async (req, res) => {
-      const product = req.body;
-      const result = await productCollection.insertOne(product);
+      // const img = req.files.image;
+      // const imgData = img.data;
+      // const encodedImg = imgData.toString('base64');
+      // const imgBuffer = Buffer.from(encodedImg, 'base64');
+      const { name, category, barcode, productId, supplierPrice, sellPrice, description } = req.body;
+      const newProduct = { name, category, barcode, productId, supplierPrice, sellPrice, description };
+      const result = await productCollection.insertOne(newProduct);
       res.json(result);
     });
 
@@ -536,7 +549,7 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const result = await productCollection.deleteOne(query);
       // console.log(result);
-      res.send("delete");
+      res.send(result);
     });
 
     // Update : Products information
@@ -701,7 +714,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Smart Shop POS server is running ...");
+  res.send("<h1>Smart Shop POS server is running ...</h1>");
 });
 
 app.listen(port, (req, res) => {
