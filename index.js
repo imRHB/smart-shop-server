@@ -81,6 +81,13 @@ async function run() {
       res.json(stores);
     });
 
+    app.get('/stores/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await storeCollection.findOne(query);
+      res.json(result);
+    });
+
     // GET : Category
     app.get("/category", async (req, res) => {
       const result = await categoryCollection.find({}).toArray();
@@ -537,8 +544,8 @@ async function run() {
       const imgData = img.data;
       const encodedImg = imgData.toString('base64');
       const imgBuffer = Buffer.from(encodedImg, 'base64');
-      const { name, category, barcode, productId, supplierPrice, sellPrice, description } = req.body;
-      const newProduct = { name, category, barcode, productId, supplierPrice, sellPrice, description, img: imgBuffer };
+      const { name, category, productId, supplierPrice, sellPrice, quantity, unit, description } = req.body;
+      const newProduct = { name, category, productId, supplierPrice: parseInt(supplierPrice), sellPrice: parseInt(sellPrice), quantity: parseInt(quantity), unit, description, img: imgBuffer };
       const result = await productCollection.insertOne(newProduct);
       res.json(result);
     });
