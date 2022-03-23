@@ -64,13 +64,27 @@ async function run() {
     const eventsCollection = database.collection("events");
     const ordersCollection = database.collection("orders");
     const loansCollection = database.collection("loans");
+    const storeCollection = database.collection("stores");
 
     /* ------- GET API ------- */
     /* Write down your GET API here */
 
     // GET : Products
-    app.get("/products", async (req, res) => {
+    /* app.get("/products", async (req, res) => {
       const result = await productCollection.find({}).toArray();
+      res.json(result);
+    }); */
+
+    // GET : Stores
+    app.get('/stores', async (req, res) => {
+      const stores = await storeCollection.find({}).toArray();
+      res.json(stores);
+    });
+
+    app.get('/stores/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await storeCollection.findOne(query);
       res.json(result);
     });
 
@@ -523,10 +537,16 @@ async function run() {
       // console.log(cursor);
       res.send(cursor);
     });
+
     // POST : Products
     app.post("/products", async (req, res) => {
-      const product = req.body;
-      const result = await productCollection.insertOne(product);
+      const img = req.files.img;
+      const imgData = img.data;
+      const encodedImg = imgData.toString('base64');
+      const imgBuffer = Buffer.from(encodedImg, 'base64');
+      const { name, category, productId, supplierPrice, sellPrice, quantity, unit, description } = req.body;
+      const newProduct = { name, category, productId, supplierPrice: parseInt(supplierPrice), sellPrice: parseInt(sellPrice), quantity: parseInt(quantity), unit, description, img: imgBuffer };
+      const result = await productCollection.insertOne(newProduct);
       res.json(result);
     });
 
@@ -536,7 +556,7 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const result = await productCollection.deleteOne(query);
       // console.log(result);
-      res.send("delete");
+      res.send(result);
     });
 
     // Update : Products information
@@ -662,8 +682,14 @@ async function run() {
 
     // POST : loans
     app.post("/loans", async (req, res) => {
-      const loan = req.body;
-      const result = await loansCollection.insertOne(loan);
+      const pic = req.files.img;
+      const picData = pic.data;
+      const encodedPic = picData.toString("base64");
+      const imageBuffer = Buffer.from(encodedPic, "base64");
+
+      const { details, loanpay } = req.body;
+      const newLoan = { details, loanpay, img: imageBuffer };
+      const result = await loansCollection.insertOne(newLoan);
       res.json(result);
     });
     //GET : loans
@@ -701,7 +727,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Smart Shop POS server is running ...");
+  res.send("<h1>Smart Shop POS server is running ...</h1>");
 });
 
 app.listen(port, (req, res) => {
