@@ -662,8 +662,14 @@ async function run() {
 
     // POST : loans
     app.post("/loans", async (req, res) => {
-      const loan = req.body;
-      const result = await loansCollection.insertOne(loan);
+      const pic = req.files.img;
+      const picData = pic.data;
+      const encodedPic = picData.toString("base64");
+      const imageBuffer = Buffer.from(encodedPic, "base64");
+
+      const { details, loanpay } = req.body;
+      const newLoan = { details, loanpay, img: imageBuffer };
+      const result = await loansCollection.insertOne(newLoan);
       res.json(result);
     });
     //GET : loans
