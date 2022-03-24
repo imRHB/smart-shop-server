@@ -76,12 +76,19 @@ async function run() {
     }); */
 
     // GET : Stores
-    app.get('/stores', async (req, res) => {
+    app.get("/stores", async (req, res) => {
       const stores = await storeCollection.find({}).toArray();
       res.json(stores);
     });
 
-    app.get('/stores/:id', async (req, res) => {
+    // POST : Add store products
+    app.post("/stores", async (req, res) => {
+      const newProduct = req.body;
+      const result = await storeCollection.insertOne(newProduct);
+      res.json(result);
+    });
+
+    app.get("/stores/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await storeCollection.findOne(query);
@@ -107,18 +114,18 @@ async function run() {
       res.json(result);
     });
 
-    app.get('/expense-items', async (req, res) => {
+    app.get("/expense-items", async (req, res) => {
       const expenseItems = await expenseItemCollection.find({}).toArray();
       res.json(expenseItems);
     });
 
-    app.post('/expense-items', async (req, res) => {
+    app.post("/expense-items", async (req, res) => {
       const newExpenseItem = req.body;
       const result = await expenseItemCollection.insertOne(newExpenseItem);
       res.json(result);
     });
 
-    app.delete('/expense-items/:id', async (req, res) => {
+    app.delete("/expense-items/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await expenseItemCollection.deleteOne(query);
@@ -542,10 +549,29 @@ async function run() {
     app.post("/products", async (req, res) => {
       const img = req.files.img;
       const imgData = img.data;
-      const encodedImg = imgData.toString('base64');
-      const imgBuffer = Buffer.from(encodedImg, 'base64');
-      const { name, category, productId, supplierPrice, sellPrice, quantity, unit, description } = req.body;
-      const newProduct = { name, category, productId, supplierPrice: parseInt(supplierPrice), sellPrice: parseInt(sellPrice), quantity: parseInt(quantity), unit, description, img: imgBuffer };
+      const encodedImg = imgData.toString("base64");
+      const imgBuffer = Buffer.from(encodedImg, "base64");
+      const {
+        name,
+        category,
+        productId,
+        supplierPrice,
+        sellPrice,
+        quantity,
+        unit,
+        description,
+      } = req.body;
+      const newProduct = {
+        name,
+        category,
+        productId,
+        supplierPrice: parseInt(supplierPrice),
+        sellPrice: parseInt(sellPrice),
+        quantity: parseInt(quantity),
+        unit,
+        description,
+        img: imgBuffer,
+      };
       const result = await productCollection.insertOne(newProduct);
       res.json(result);
     });
@@ -581,7 +607,6 @@ async function run() {
 
     //   ------------- End Products Section  -----------//
 
-
     /* ========================= order Collection Start ======================= */
 
     // POST : orders
@@ -598,21 +623,23 @@ async function run() {
       res.json(result);
     });
 
-
     //UPDATE API - orders payment status
-    app.put('/orders/:id', async (req, res) => {
+    app.put("/orders/:id", async (req, res) => {
       const order = req.body;
       const options = { upsert: true };
       const updatedPayment = { _id: ObjectId(req.params.id) };
       const updatedPaymentStatus = {
         $set: {
-          payment: order.payment
-        }
+          payment: order.payment,
+        },
       };
-      const result = await ordersCollection.updateOne(updatedPayment, updatedPaymentStatus, options);
+      const result = await ordersCollection.updateOne(
+        updatedPayment,
+        updatedPaymentStatus,
+        options
+      );
       res.json(result);
     });
-
 
     // //Get: single order
     app.get("/orders/:id", async (req, res) => {
@@ -625,11 +652,11 @@ async function run() {
     //Remove : order
 
     app.delete("/orders/:id", async (req, res) => {
-      const deletedOrder = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      const deletedOrder = await ordersCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
       res.json(deletedOrder);
     });
-
-
 
     /* ========================= order Collection End ======================= */
 
@@ -642,21 +669,23 @@ async function run() {
       res.json(result);
     });
 
-
     //UPDATE API - transactions status
-    app.put('/transactions/:id', async (req, res) => {
+    app.put("/transactions/:id", async (req, res) => {
       const transaction = req.body;
       const options = { upsert: true };
       const updatedPayment = { _id: ObjectId(req.params.id) };
       const updatedPaymentStatus = {
         $set: {
-          payment: transaction.payment
-        }
+          payment: transaction.payment,
+        },
       };
-      const result = await transactionCollection.updateOne(updatedPayment, updatedPaymentStatus, options);
+      const result = await transactionCollection.updateOne(
+        updatedPayment,
+        updatedPaymentStatus,
+        options
+      );
       res.json(result);
     });
-
 
     // //Get: single transaction
     app.get("/transactions/:id", async (req, res) => {
@@ -669,14 +698,13 @@ async function run() {
     //Remove : transaction
 
     app.delete("/transactions/:id", async (req, res) => {
-      const deletedTransaction = await transactionCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      const deletedTransaction = await transactionCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
       res.json(deletedTransaction);
     });
 
-
-
     /* ========================= Transaction Collection End ======================= */
-
 
     /* ========================= Loans Collection Start ======================= */
 
@@ -700,25 +728,30 @@ async function run() {
 
     //Delete Single Loan by ID
     app.delete("/loans/:id", async (req, res) => {
-      const deletedLoans = await loansCollection.deleteOne({ _id: ObjectId(req.params.id) });
+      const deletedLoans = await loansCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
       res.json(deletedLoans);
     });
 
     //UPDATE API - loans status
-    app.put('/loans/:id', async (req, res) => {
+    app.put("/loans/:id", async (req, res) => {
       const loan = req.body;
       const options = { upsert: true };
       const approvedLoan = { _id: ObjectId(req.params.id) };
       const approvedLoanStatus = {
         $set: {
-          status: loan.status
-        }
+          status: loan.status,
+        },
       };
-      const result = await transactionCollection.updateOne(approvedLoan, approvedLoanStatus, options);
+      const result = await transactionCollection.updateOne(
+        approvedLoan,
+        approvedLoanStatus,
+        options
+      );
       res.json(result);
     });
     /* ========================= Loans Collection End ======================= */
-
   } finally {
     // client.close();
   }
