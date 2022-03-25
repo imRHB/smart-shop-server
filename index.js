@@ -363,13 +363,13 @@ async function run() {
 
     // PUT - Update an supplier details
     app.put("/suppliers", async (req, res) => {
-      const { _id, name, contact, address, details, balance } = req.body;
+      const { _id, name, contact, email, company, companyAddress } = req.body;
       const supplier = {
         name,
         contact,
-        address,
-        details,
-        balance,
+        email,
+        company,
+        companyAddress,
       };
       const filter = { _id: ObjectId(_id) };
       const options = { upsert: false };
